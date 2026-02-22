@@ -11,29 +11,29 @@ const SEASON_CONFIG = {
     primaryColor: '#005AFF',
     accentColor: '#FFFFFF',
     // Portrait Franco: 800x1200px (PNG transparente, desde la cintura hacia arriba)
-    driverImage: '/assets/images/franco_2024.png', 
+    driverImage: '/img/franco_2024.png', 
     // Monoplaza: 1200x600px (PNG transparente, vista lateral o 3/4)
-    carImage: '/assets/images/auto_fw46_2024.webp', 
+    carImage: '/img/auto_fw46_2024.webp', 
     // Backgrounds: 1920x1080px (Texturas de asfalto o circuitos difuminados)
-    bgImage: '/assets/images/background_franco_2024.jpg', 
+    bgImage: '/img/background_franco_2024.jpg', 
   },
   2025: {
     year: 2025,
     team: 'BWT Alpine F1 Team',
     primaryColor: '#0078C1',
     accentColor: '#FF70B7',
-    driverImage: '/assets/images/franco_2025.png',
-    carImage: '/assets/images/auto_a525_2025.webp',
-    bgImage: '/assets/images/background_franco_2025.jpg',
+    driverImage: '/img/franco_2025.png',
+    carImage: '/img/auto_a525_2025.webp',
+    bgImage: '/img/background_franco_2025.jpg',
   },
   2026: {
     year: 2026,
     team: 'BWT Alpine F1 Team',
     primaryColor: '#005090',
     accentColor: '#FF70B7',
-    driverImage: '/assets/images/franco_2026.png',
-    carImage: '/assets/images/auto_a526_2026.webp',
-    bgImage: '/assets/images/background_franco_2026.jpg',
+    driverImage: '/img/franco_2026.png',
+    carImage: '/img/auto_a526_2026.webp',
+    bgImage: '/img/background_franco_2026.jpg',
   }
 };
 
@@ -226,7 +226,7 @@ export default function App() {
               
               {/* Car (Foreground Layer) */}
               <motion.img
-                src={activeView === 'Home' ? '/assets/images/background_franco_2026.jpg' : config.carImage}
+                src={activeView === 'Home' ? '/img/background_franco_2026.jpg' : config.carImage}
                 alt={`Monoplaza ${selectedYear}`}
                 referrerPolicy="no-referrer"
                 className="absolute z-20 w-[90%] md:w-[70%] max-w-5xl object-contain drop-shadow-2xl"
@@ -252,7 +252,7 @@ export default function App() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundImage: `url('/assets/images/colapinto_evolution_composite.jpg')`,
+                backgroundImage: `url('/img/colapinto_evolution_composite.jpg')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 filter: 'blur(5px) brightness(0.4)',
