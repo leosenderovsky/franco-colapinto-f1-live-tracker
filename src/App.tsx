@@ -226,7 +226,7 @@ export default function App() {
               
               {/* Car (Foreground Layer) */}
               <motion.img
-                src={activeView === 'Home' ? './assets/images/background_franco_2026.jpg' : config.carImage}
+                src={activeView === 'Home' ? '/assets/images/background_franco_2026.jpg' : config.carImage}
                 alt={`Monoplaza ${selectedYear}`}
                 referrerPolicy="no-referrer"
                 className="absolute z-20 w-[90%] md:w-[70%] max-w-5xl object-contain drop-shadow-2xl"
@@ -252,7 +252,7 @@ export default function App() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundImage: `url('./assets/images/colapinto_evolution_composite.jpg')`,
+                backgroundImage: `url('/assets/images/colapinto_evolution_composite.jpg')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 filter: 'blur(5px) brightness(0.4)',
