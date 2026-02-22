@@ -9,9 +9,11 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler, // <--- 1. Importa esto
 } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
+// 2. Regístralo aquí:
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -20,6 +22,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  Filler, // <--- 3. Añádelo aquí
   annotationPlugin
 );
 
