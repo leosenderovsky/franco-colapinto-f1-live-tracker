@@ -243,7 +243,7 @@ export default function App() {
                 {activeView === 'Home' ? (
                     <main id="home-chart-container" className="container mx-auto px-4 py-12 md:py-24 relative z-20">
             <h2 className="text-3xl font-bold uppercase tracking-wider flex items-center gap-3 mb-8">
-              Career Progression
+              Historial de posiciones
             </h2>
              <div style={{ position: 'relative', height: '60vh' }}>
               <div style={{
