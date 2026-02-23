@@ -3,6 +3,20 @@ import CareerChart from './components/CareerChart';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Flag, Timer } from 'lucide-react';
 
+import franco2024 from '../assets/img/franco_2024.png';
+import auto2024 from '../assets/img/auto_fw46_2024.webp';
+import bg2024 from '../assets/img/background_franco_2024.jpg';
+
+import franco2025 from '../assets/img/franco_2025.png';
+import auto2025 from '../assets/img/auto_a525_2025.webp';
+import bg2025 from '../assets/img/background_franco_2025.jpg';
+
+import franco2026 from '../assets/img/franco_2026.png';
+import auto2026 from '../assets/img/auto_a526_2026.webp';
+import bg2026 from '../assets/img/background_franco_2026.jpg';
+
+import colapintoEvolution from '../assets/img/colapinto_evolution_composite.jpg';
+
 // 2. LÓGICA DE IDENTIDAD VISUAL (THEMING)
 const SEASON_CONFIG = {
   2024: {
@@ -11,29 +25,29 @@ const SEASON_CONFIG = {
     primaryColor: '#005AFF',
     accentColor: '#FFFFFF',
     // Portrait Franco: 800x1200px (PNG transparente, desde la cintura hacia arriba)
-    driverImage: '/assets/img/franco_2024.png', 
+    driverImage: franco2024, 
     // Monoplaza: 1200x600px (PNG transparente, vista lateral o 3/4)
-    carImage: '/assets/img/auto_fw46_2024.webp', 
+    carImage: auto2024, 
     // Backgrounds: 1920x1080px (Texturas de asfalto o circuitos difuminados)
-    bgImage: '/assets/img/background_franco_2024.jpg', 
+    bgImage: bg2024, 
   },
   2025: {
     year: 2025,
     team: 'BWT Alpine F1 Team',
     primaryColor: '#0078C1',
     accentColor: '#FF70B7',
-    driverImage: '/assets/img/franco_2025.png',
-    carImage: '/assets/img/auto_a525_2025.webp',
-    bgImage: '/assets/img/background_franco_2025.jpg',
+    driverImage: franco2025,
+    carImage: auto2025,
+    bgImage: bg2025,
   },
   2026: {
     year: 2026,
     team: 'BWT Alpine F1 Team',
     primaryColor: '#005090',
     accentColor: '#FF70B7',
-    driverImage: '/assets/img/franco_2026.png',
-    carImage: '/assets/img/auto_a526_2026.webp',
-    bgImage: '/assets/img/background_franco_2026.jpg',
+    driverImage: franco2026,
+    carImage: auto2026,
+    bgImage: bg2026,
   }
 };
 
@@ -226,7 +240,7 @@ export default function App() {
               
               {/* Car (Foreground Layer) */}
               <motion.img
-                src={activeView === 'Home' ? '/assets/img/background_franco_2026.jpg' : config.carImage}
+                src={activeView === 'Home' ? bg2026 : config.carImage}
                 alt={`Monoplaza ${selectedYear}`}
                 referrerPolicy="no-referrer"
                 className="absolute z-20 w-[90%] md:w-[70%] max-w-5xl object-contain drop-shadow-2xl"
@@ -252,7 +266,7 @@ export default function App() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundImage: `url('/assets/img/colapinto_evolution_composite.jpg')`,
+                backgroundImage: `url(${colapintoEvolution})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 filter: 'blur(5px) brightness(0.4)',
