@@ -16,6 +16,8 @@ import auto2026 from '../assets/img/auto_a526_2026.webp';
 import bg2026 from '../assets/img/background_franco_2026.jpg';
 
 import colapintoEvolution from '../assets/img/colapinto_evolution_composite.jpg';
+import williamsLogo from '../assets/img/williams-f1-team.png';
+import alpineLogo from '../assets/img/bwt-alpine-f1-team.png';
 
 // 2. LÓGICA DE IDENTIDAD VISUAL (THEMING)
 const SEASON_CONFIG = {
@@ -147,132 +149,167 @@ export default function App() {
     }
   }, [activeView]);
 
-  useEffect(() => {
-    const bgElement = document.querySelector('.app-background-layer');
-    if (bgElement) {
-      (bgElement as HTMLElement).style.backgroundImage = `url(${config.bgImage})`;
-    }
-  }, [config.bgImage]);
+
 
   return (
     <div 
-      className="min-h-screen bg-black text-white font-sans overflow-x-hidden transition-colors duration-700 ease-in-out relative"
+      className="min-h-screen bg-[#151921] text-slate-200 font-sans overflow-x-hidden transition-colors duration-700 ease-in-out relative"
       style={{ '--primary': config.primaryColor, '--accent': config.accentColor } as React.CSSProperties}
     >
-      <div className="app-background-layer"></div>
+
       {/* The overlay is now part of the background layer's styling */}
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Header & Segmented Control */}
-        <header className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div 
-              className="text-5xl md:text-7xl font-black italic tracking-tighter"
-              style={{ color: config.primaryColor, textShadow: `0 0 20px ${config.primaryColor}80` }}
-            >
-              43
+        <header className="px-6 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 bg-[#1A1D24]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#E10600] flex items-center justify-center text-white font-black italic text-xl shadow-lg shadow-red-500/20 pr-1">
+              F1
             </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-wider">Franco Colapinto</h1>
-              <p className="text-sm md:text-base opacity-80 uppercase tracking-widest">
-                {activeView === 'Home' ? 'F1 Live Tracker' : config.team}
+            <div className="flex flex-col">
+              <h1 className="text-xl font-black tracking-tight text-white flex items-baseline gap-1">
+                COLAPINTO<span className="text-[#007AFF]">.43</span>
+              </h1>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+                {activeView === 'Home' ? 'Live Tracker' : config.team}
               </p>
             </div>
           </div>
 
-                    <div className="flex p-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10">
-            <button
-              onClick={() => setActiveView('Home')}
-              className={`relative px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 ${activeView === 'Home' ? 'text-white' : 'text-white/50 hover:text-white/80'}`}>
-              {activeView === 'Home' && (
-                <motion.div
-                  layoutId="active-pill"
-                  className="absolute inset-0 rounded-full"
-                  style={{ backgroundColor: config.primaryColor }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">Home</span>
-            </button>
-            {[2024, 2025, 2026].map((year) => (
+          <div className="flex-1 flex justify-end">
+            <div className="flex p-1 rounded-full bg-[#151921] border border-white/5 shadow-inner">
               <button
-                key={year}
-                onClick={() => setActiveView(year as 2024 | 2025 | 2026)}
-                className={`relative px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
-                  activeView === year ? 'text-white' : 'text-white/50 hover:text-white/80'
-                }`}
-              >
-                {activeView === year && (
+                onClick={() => setActiveView('Home')}
+                className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeView === 'Home' ? 'text-white' : 'text-slate-400 hover:text-slate-200'}`}>
+                {activeView === 'Home' && (
                   <motion.div
                     layoutId="active-pill"
-                    className="absolute inset-0 rounded-full"
-                    style={{ backgroundColor: config.primaryColor }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className="absolute inset-0 rounded-full bg-[#007AFF]"
+                    transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
                   />
                 )}
-                <span className="relative z-10">{year}</span>
+                <span className="relative z-10">Home</span>
               </button>
-            ))}
+              {[2024, 2025, 2026].map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setActiveView(year as 2024 | 2025 | 2026)}
+                  className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    activeView === year ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {activeView === year && (
+                    <motion.div
+                      layoutId="active-pill"
+                      className="absolute inset-0 rounded-full bg-[#007AFF]"
+                      transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
+                    />
+                  )}
+                  <span className="relative z-10">{year}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
-        {/* Hero Section - Parallax & Layers */}
-        <section className="relative flex-1 flex items-center justify-center min-h-[50vh] md:min-h-[60vh] overflow-hidden">
-          <AnimatePresence mode="wait">
+        {/* Hero Section */}
+        <section className="relative flex-1 flex items-center justify-start overflow-hidden text-white">
+          {/* Background Image with Animation */}
+          <AnimatePresence>
             <motion.div
-              key={`hero-${selectedYear}`}
-              className="absolute inset-0 flex items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              key={`hero-bg-${selectedYear}`}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${activeView === 'Home' ? bg2026 : config.carImage})` }}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.8, ease: 'easeInOut' }}
             >
-              {/* Driver Portrait (Background Layer) */}
-              <motion.img
-                src={config.driverImage}
-                alt={`Franco Colapinto ${selectedYear}`}
-                referrerPolicy="no-referrer"
-                className="absolute bottom-0 h-[80%] md:h-[120%] object-contain object-bottom opacity-40 md:opacity-60 mix-blend-screen"
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 0.4 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              />
-              
-              {/* Car (Foreground Layer) */}
-              <motion.img
-                src={activeView === 'Home' ? bg2026 : config.carImage}
-                alt={`Monoplaza ${selectedYear}`}
-                referrerPolicy="no-referrer"
-                className="absolute z-20 w-[90%] md:w-[70%] max-w-5xl object-contain drop-shadow-2xl"
-                initial={{ x: '100vw', skewX: -10 }}
-                animate={{ x: 0, skewX: 0 }}
-                transition={{ type: 'spring', stiffness: 50, damping: 15, delay: 0.1 }}
-                style={{ filter: `drop-shadow(0 20px 30px ${config.primaryColor}40)` }}
-              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#151921] via-[#151921]/80 to-transparent"></div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Hero Content */}
+          <div className="relative z-10 container mx-auto px-6 md:px-8 py-24 md:py-32 grid">
+            <AnimatePresence>
+              <motion.div
+                key={`hero-content-${selectedYear}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="max-w-3xl [grid-area:1/1]"
+              >
+                {activeView === 2026 && (
+                  <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-widest text-slate-300">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span>EN VIVO: Paddock Activo</span>
+                  </div>
+                )}
+                
+                <h2 className="font-black text-7xl md:text-9xl uppercase italic -skew-x-12 my-4 text-white" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
+                  Franco
+                  <br />
+                  Colapinto
+                </h2>
+
+                {activeView === 2026 ? (
+                  <div className="flex items-stretch gap-8 border-t border-white/10 pt-6">
+                    <div className="pl-4 border-l-2" style={{ borderColor: config.primaryColor }}>
+                      <p className="text-xs uppercase tracking-widest text-white/60">Sesión Actual</p>
+                      <p className="text-2xl font-semibold">Práctica Libre 1</p>
+                    </div>
+                    <div className="pl-4 border-l-2 border-white/20">
+                      <p className="text-xs uppercase tracking-widest text-white/60">Objetivo</p>
+                      <p className="text-2xl font-semibold">Top 10 Final</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-6 max-w-lg border-t border-white/10 pt-6">
+                    {activeView === 'Home' && (
+                      <p 
+                        className="text-2xl font-bold uppercase tracking-wider text-slate-200"
+                        style={{ textShadow: '0 2px 20px rgba(0,0,0,0.7)' }}
+                      >
+                        Su trayectoria en la F1
+                      </p>
+                    )}
+                    {activeView === 2024 && (
+                      <img 
+                        src={williamsLogo} 
+                        alt="Williams Racing Logo" 
+                        className="h-24"
+                        style={{ filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.5))' }} 
+                      />
+                    )}
+                    {activeView === 2025 && (
+                      <img 
+                        src={alpineLogo} 
+                        alt="BWT Alpine F1 Team Logo" 
+                        className="h-24"
+                        style={{ filter: 'drop-shadow(0 4px 15px rgba(0,0,0,0.5))' }} 
+                      />
+                    )}
+                  </div>
+                )}
+
+
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </section>
 
         {/* Results Section - Glassmorphism */}
-                {activeView === 'Home' ? (
-                    <main id="home-chart-container" className="container mx-auto px-4 py-12 md:py-24 relative z-20">
-            <h2 className="text-3xl font-bold uppercase tracking-wider flex items-center gap-3 mb-8">
-              Historial de posiciones
-            </h2>
-             <div style={{ position: 'relative', height: '60vh' }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundImage: `url(${colapintoEvolution})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: 'blur(5px) brightness(0.4)',
-                zIndex: 1,
-              }}></div>
-              <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
+        {activeView === 'Home' ? (
+          <main id="home-chart-container" className="container mx-auto px-4 py-12 md:py-16 relative z-20">
+            <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl backdrop-blur-xl shadow-2xl shadow-black/20">
+              <div className="p-6 border-b border-white/5">
+                <h2 className="text-lg font-bold uppercase tracking-wider text-slate-300">Historial de posiciones</h2>
+              </div>
+              <div className="p-2 md:p-6" style={{ position: 'relative', height: '60vh' }}>
                 {loading ? (
                   <div className="flex justify-center items-center h-full">
                     <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" style={{ borderTopColor: config.primaryColor }} />
@@ -284,86 +321,86 @@ export default function App() {
             </div>
           </main>
         ) : (
-                  <main className="container mx-auto px-4 py-12 md:py-24 relative z-20">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold uppercase tracking-wider flex items-center gap-3">
-              <Flag className="w-8 h-8" style={{ color: config.accentColor }} />
-              Resultados {activeView}
-            </h2>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" style={{ borderTopColor: config.primaryColor }} />
+          <main className="container mx-auto px-4 py-12 md:py-24 relative z-20">
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Puntos</p>
+                <p className="text-5xl font-black text-white mt-2">4 <span className="text-lg text-green-400">+4 Últ. Carrera</span></p>
+              </div>
+              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Pos. Piloto</p>
+                <p className="text-5xl font-black text-white mt-2">19<span className="text-lg text-slate-400">vo</span></p>
+              </div>
+              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Mejor Posición</p>
+                <p className="text-5xl font-black text-white mt-2">P8</p>
+              </div>
             </div>
-          ) : results.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-12 text-center"
-            >
-              <Calendar className="w-16 h-16 mx-auto mb-6 opacity-50" />
-              <h3 className="text-2xl font-bold mb-2">Calendario Confirmado</h3>
-              <p className="text-white/60 max-w-md mx-auto">
-                {error || `Los resultados de la temporada ${activeView} aún no están disponibles o la temporada no ha comenzado.`}
-              </p>
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {results.map((race, index) => {
-                const result = race.Results[0];
-                const isPodium = parseInt(result.position) <= 3;
-                const isPoints = parseInt(result.position) <= 10;
-                
-                return (
-                  <motion.div
-                    key={race.round}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group relative bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-3xl p-6 transition-all duration-300 overflow-hidden"
-                  >
-                    {/* Accent gradient on hover */}
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500"
-                      style={{ background: `radial-gradient(circle at top right, ${config.primaryColor}, transparent 70%)` }}
-                    />
 
-                    <div className="flex justify-between items-start mb-6 relative z-10">
-                      <div>
-                        <p className="text-sm font-mono text-white/50 mb-1">RND {race.round} • {new Date(race.date).toLocaleDateString()}</p>
-                        <h3 className="text-xl font-bold leading-tight">{race.raceName}</h3>
-                        <p className="text-sm text-white/70 mt-1">{race.Circuit.Location.country}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className={`text-4xl font-black italic ${isPodium ? 'text-yellow-400' : isPoints ? 'text-white' : 'text-white/40'}`}>
-                          P{result.position}
-                        </div>
-                        <p className="text-xs font-mono text-white/50 mt-1 uppercase">{result.status}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10 relative z-10">
-                      <div>
-                        <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Clasificación</p>
-                        <p className="font-mono text-lg">P{result.grid}</p>
-                      </div>
-                      {result.FastestLap && (
+            {loading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" style={{ borderTopColor: config.primaryColor }} />
+              </div>
+            ) : results.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-12 text-center backdrop-blur-xl"
+              >
+                <Calendar className="w-16 h-16 mx-auto mb-6 opacity-30" />
+                <h3 className="text-2xl font-bold mb-2 text-white">Calendario Confirmado</h3>
+                <p className="text-slate-400 max-w-md mx-auto">
+                  {error || `Los resultados de la temporada ${activeView} aún no están disponibles.`}
+                </p>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.map((race, index) => {
+                  const result = race.Results[0];
+                  return (
+                    <motion.div
+                      key={race.round}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl hover:bg-white/5 transition-colors duration-300"
+                    >
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <p className="text-xs text-white/50 uppercase tracking-wider mb-1 flex items-center gap-1">
-                            <Timer className="w-3 h-3" /> Vuelta Rápida
-                          </p>
-                          <p className="font-mono text-lg">{result.FastestLap.Time.time}</p>
+                          <p className="text-sm font-semibold text-slate-300 mb-1">{race.raceName}</p>
+                          <p className="text-xs text-slate-400">{race.Circuit.Location.country}</p>
                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-                         </main>
+                        <div className="text-right flex-shrink-0">
+                          <div className={`text-3xl font-black text-white`}>
+                            P{result.position}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                        <div>
+                          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Parrilla</p>
+                          <p className="font-mono text-lg text-white">P{result.grid}</p>
+                        </div>
+                        {result.FastestLap && (
+                          <div>
+                            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Vuelta Rápida</p>
+                            <p className="font-mono text-lg text-white">{result.FastestLap.Time.time}</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </main>
         )}
+        <footer className="container mx-auto px-4 py-6 md:px-8 border-t border-white/5 mt-auto">
+          <div className="flex justify-center items-center text-sm">
+            <p className="text-slate-400">Franco Colapinto F1 Live Tracker © 2026 Leo Aquiba Senderovsky</p>
+          </div>
+        </footer>
 
       </div>
     </div>
