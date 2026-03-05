@@ -12,6 +12,8 @@ import {
   Filler,
 } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import williamsLogoSrc from '../../assets/img/williams-f1-team.png';
+import alpineLogoSrc from '../../assets/img/bwt-alpine-f1-team.png';
 
 ChartJS.register(
   CategoryScale,
@@ -41,10 +43,10 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
   const getYearZones = () => {
     const zones: { start: number; end: number; year: number }[] = [];
     if (data.length === 0) return [];
-    
+
     let start = 0;
     let currentYear = data[0].year;
-    
+
     data.forEach((d, i) => {
       if (d.year !== currentYear) {
         zones.push({ start, end: i - 0.5, year: currentYear });
@@ -59,23 +61,23 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
   const yearZones = getYearZones();
 
   const williamsLogo = new Image();
-  williamsLogo.src = 'assets/img/williams-f1-team.png';
+  williamsLogo.src = williamsLogoSrc;
   const alpineLogo = new Image();
-  alpineLogo.src = 'assets/img/bwt-alpine-f1-team.png';
+  alpineLogo.src = alpineLogoSrc;
 
   const headerPlugin = {
     id: 'headerPlugin',
     afterDraw: (chart) => {
       const ctx = chart.ctx;
-      
+
       williamsLogo.onload = () => chart.update();
       alpineLogo.onload = () => chart.update();
 
       yearZones.forEach(zone => {
         const xPos = chart.scales.x.getPixelForValue((zone.start + zone.end) / 2);
-        
+
         ctx.save();
-        ctx.font = `bold ${window.innerWidth < 768 ? 12 : 16}px sans-serif`;
+        ctx.font = `bold ${window.innerWidth < 768 ? 24 : 32}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
 
@@ -87,19 +89,20 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
         }
 
         if (logo.complete) {
-            const logoHeight = 25;
+            const logoHeight = 50;
             const logoWidth = (logo.width / logo.height) * logoHeight;
             const yPosImg = 15;
             ctx.drawImage(logo, xPos - logoWidth / 2, yPosImg, logoWidth, logoHeight);
-            
-            const yPosText = yPosImg + logoHeight + 15;
+
+            // Adjusted text position to be below the larger logo with a margin
+            const yPosText = yPosImg + logoHeight + 35;
             ctx.fillText(zone.year.toString(), xPos, yPosText);
         }
         ctx.restore();
       });
     }
   };
-  
+
   const lineAnnotations = yearZones.slice(0, -1).map((zone, i) => ({
     type: 'line' as const,
     xMin: zone.end,
@@ -116,7 +119,7 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
     backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
     borderWidth: 0,
   }));
-  
+
   const chartData = {
     labels: data.map(d => d.raceName),
     datasets: [
@@ -150,7 +153,8 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
     maintainAspectRatio: false,
     layout: {
       padding: {
-        top: 60,
+        // Adjusted top padding to reduce the margin
+        top: 115,
       },
     },
     plugins: {
