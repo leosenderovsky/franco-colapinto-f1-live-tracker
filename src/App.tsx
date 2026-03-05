@@ -269,10 +269,10 @@ export default function App() {
           <div className="flex items-center gap-3">
             <img src={f1Logo} alt="F1 Logo" className="h-10 object-contain" />
             <div className="flex flex-col">
-              <h1 className="text-xl font-black tracking-tight text-white flex items-baseline gap-1">
+              <h1 className="text-xl font-black tracking-tight text-white flex items-baseline gap-1 italic -skew-x-12">
                 COLAPINTO<span className="text-[#007AFF]">.43</span>
               </h1>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold italic -skew-x-12">
                 {activeView === 'Home' ? 'Live Tracker' : config.team}
               </p>
             </div>
