@@ -9,11 +9,10 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler, // <--- 1. Importa esto
+  Filler,
 } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
-// 2. Regístralo aquí:
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,7 +21,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler, // <--- 3. Añádelo aquí
+  Filler,
   annotationPlugin
 );
 
@@ -38,6 +37,7 @@ interface CareerChartProps {
 }
 
 const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
+
   const getYearZones = () => {
     const zones: { start: number; end: number; year: number }[] = [];
     if (data.length === 0) return [];
@@ -58,6 +58,48 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
 
   const yearZones = getYearZones();
 
+  const williamsLogo = new Image();
+  williamsLogo.src = 'assets/img/williams-f1-team.png';
+  const alpineLogo = new Image();
+  alpineLogo.src = 'assets/img/bwt-alpine-f1-team.png';
+
+  const headerPlugin = {
+    id: 'headerPlugin',
+    afterDraw: (chart) => {
+      const ctx = chart.ctx;
+      
+      williamsLogo.onload = () => chart.update();
+      alpineLogo.onload = () => chart.update();
+
+      yearZones.forEach(zone => {
+        const xPos = chart.scales.x.getPixelForValue((zone.start + zone.end) / 2);
+        
+        ctx.save();
+        ctx.font = `bold ${window.innerWidth < 768 ? 12 : 16}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+
+        let logo;
+        if (zone.year === 2024) {
+          logo = williamsLogo;
+        } else {
+          logo = alpineLogo;
+        }
+
+        if (logo.complete) {
+            const logoHeight = 25;
+            const logoWidth = (logo.width / logo.height) * logoHeight;
+            const yPosImg = 15;
+            ctx.drawImage(logo, xPos - logoWidth / 2, yPosImg, logoWidth, logoHeight);
+            
+            const yPosText = yPosImg + logoHeight + 15;
+            ctx.fillText(zone.year.toString(), xPos, yPosText);
+        }
+        ctx.restore();
+      });
+    }
+  };
+  
   const lineAnnotations = yearZones.slice(0, -1).map((zone, i) => ({
     type: 'line' as const,
     xMin: zone.end,
@@ -74,22 +116,7 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
     backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
     borderWidth: 0,
   }));
-
-  const labelAnnotations = yearZones.map((zone, i) => ({
-    type: 'label' as const,
-    xValue: (zone.start + zone.end) / 2,
-    yValue: 1,
-    yAdjust: 30,
-    content: zone.year === 2024 ? ['Williams', `${zone.year}`] : [`${zone.year === 2026 ? 'Alpine' : 'Alpine'}`, `${zone.year}`],
-    color: 'rgba(255, 255, 255, 0.7)',
-    font: {
-      size: window.innerWidth < 768 ? 10 : 14,
-      weight: 'bold' as const,
-    },
-    textAlign: 'center' as const,
-    clip: false,
-  }));
-
+  
   const chartData = {
     labels: data.map(d => d.raceName),
     datasets: [
@@ -139,7 +166,7 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
         },
       },
       annotation: {
-        annotations: [...lineAnnotations, ...boxAnnotations, ...labelAnnotations],
+        annotations: [...lineAnnotations, ...boxAnnotations],
       },
     },
     scales: {
@@ -165,7 +192,7 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
     },
   };
 
-  return <Line options={options} data={chartData} />;
+  return <Line options={options} data={chartData} plugins={[headerPlugin]}/>;
 };
 
 export default CareerChart;
