@@ -75,6 +75,7 @@ export default function App() {
   const [careerData, setCareerData] = useState<any[]>([]);
   const [results, setResults] = useState<RaceResult[]>([]);
   const [standings, setStandings] = useState<any>(null);
+  const [calendar2026, setCalendar2026] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -160,10 +161,29 @@ export default function App() {
       setLoading(false);
     };
 
+    const fetchCalendar2026 = async () => {
+      try {
+        const response = await fetch('https://jolpi.ca/ergast/f1/2026.json');
+        if (response.ok) {
+          const data = await response.json();
+          const races = data.MRData?.RaceTable?.Races || [];
+          setCalendar2026(races);
+        } else {
+          setCalendar2026([]);
+        }
+      } catch (err) {
+        console.error('Error fetching calendar 2026:', err);
+        setCalendar2026([]);
+      }
+    };
+
     if (activeView === 'Home') {
       fetchFullCareerData();
     } else {
       fetchSeasonData(activeView);
+      if (activeView === 2026) {
+        fetchCalendar2026();
+      }
     }
   }, [activeView]);
 
@@ -179,6 +199,15 @@ export default function App() {
     if (pos === 2) return 'do';
     if (pos === 3) return 'ro';
     return 'vo';
+  };
+
+  // Calculate next race for 2026
+  const now = new Date();
+  const nextRace = calendar2026.find(race => new Date(race.date) > now);
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
   };
 
   return (
@@ -296,6 +325,17 @@ export default function App() {
                       <p className="text-xs uppercase tracking-widest text-white/60">Objetivo</p>
                       <p className="text-2xl font-semibold">Top 10 Final</p>
                     </div>
+                    {nextRace && (
+                      <div className="pl-4 border-l-2 border-white/20">
+                        <p className="text-xs uppercase tracking-widest text-white/60 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> Próxima carrera
+                        </p>
+                        <p className="text-2xl font-semibold">{nextRace.raceName}</p>
+                        <p className="text-sm text-white/80">
+                          {formatDate(nextRace.date)} - {nextRace.Circuit.circuitName}, {nextRace.Circuit.Location.locality}, {nextRace.Circuit.Location.country}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-6 max-w-lg border-t border-white/10 pt-6">
