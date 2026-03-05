@@ -16,6 +16,7 @@ import auto2026 from '../assets/img/auto_a526_2026.webp';
 import bg2026 from '../assets/img/background_franco_2026.jpg';
 
 import colapintoEvolution from '../assets/img/colapinto_evolution_composite.jpg';
+import f1Logo from '../assets/img/F1.png';
 import williamsLogo from '../assets/img/williams-f1-team.png';
 import alpineLogo from '../assets/img/bwt-alpine-f1-team.png';
 
@@ -266,9 +267,7 @@ export default function App() {
         {/* Header & Segmented Control */}
         <header className="px-6 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 bg-[#1A1D24]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E10600] flex items-center justify-center text-white font-black italic text-xl shadow-lg shadow-red-500/20 pr-1">
-              F1
-            </div>
+            <img src={f1Logo} alt="F1 Logo" className="w-10 h-10 shadow-lg shadow-red-500/20" />
             <div className="flex flex-col">
               <h1 className="text-xl font-black tracking-tight text-white flex items-baseline gap-1">
                 COLAPINTO<span className="text-[#007AFF]">.43</span>
