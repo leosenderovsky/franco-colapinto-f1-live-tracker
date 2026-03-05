@@ -74,6 +74,7 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState<2024 | 2025 | 2026>(2025);
   const [careerData, setCareerData] = useState<any[]>([]);
   const [results, setResults] = useState<RaceResult[]>([]);
+  const [standings, setStandings] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,16 +96,33 @@ export default function App() {
       setLoading(true);
       setError(null);
       setResults([]);
+      setStandings(null);
       try {
         const response = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/drivers/colapinto/results.json`);
         if (!response.ok) throw new Error('Error fetching data');
         const data = await response.json();
         const races = data.MRData?.RaceTable?.Races || [];
         setResults(races);
+
+        // Fetch standings
+        try {
+          const standingsResponse = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/drivers/colapinto/driverStandings.json`);
+          if (standingsResponse.ok) {
+            const standingsData = await standingsResponse.json();
+            const standingsInfo = standingsData.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings?.[0];
+            setStandings(standingsInfo);
+          } else {
+            setStandings(null);
+          }
+        } catch (err) {
+          console.error(`Error fetching standings for ${year}:`, err);
+          setStandings(null);
+        }
       } catch (err) {
         console.error(err);
         setError('No se pudieron cargar los resultados.');
         setResults([]);
+        setStandings(null);
       } finally {
         setLoading(false);
       }
@@ -149,7 +167,19 @@ export default function App() {
     }
   }, [activeView]);
 
+  // Calculate stats
+  const totalPoints = results.reduce((sum, race) => sum + (parseInt(race.Results[0]?.points || '0', 10)), 0);
+  const driverPosition = standings ? parseInt(standings.position, 10) : null;
+  const bestPosition = results.length > 0 ? Math.min(...results.map(r => parseInt(r.Results[0].position, 10))) : null;
+  const lastRacePoints = results.length > 0 ? parseInt(results[results.length - 1].Results[0].points, 10) : 0;
 
+  const positionSuffix = (pos: number | null) => {
+    if (!pos) return '';
+    if (pos === 1) return 'ro';
+    if (pos === 2) return 'do';
+    if (pos === 3) return 'ro';
+    return 'vo';
+  };
 
   return (
     <div 
@@ -323,20 +353,30 @@ export default function App() {
         ) : (
           <main className="container mx-auto px-4 py-12 md:py-24 relative z-20">
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
-                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Puntos</p>
-                <p className="text-5xl font-black text-white mt-2">4 <span className="text-lg text-green-400">+4 Últ. Carrera</span></p>
+            {(activeView !== 2026 || results.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                  <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Puntos</p>
+                  <p className="text-5xl font-black text-white mt-2">
+                    {totalPoints}
+                    {lastRacePoints > 0 && <span className="text-lg text-green-400"> +{lastRacePoints} Últ. Carrera</span>}
+                  </p>
+                </div>
+                <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                  <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Pos. Piloto</p>
+                  <p className="text-5xl font-black text-white mt-2">
+                    {driverPosition || 'N/A'}
+                    <span className="text-lg text-slate-400">{positionSuffix(driverPosition)}</span>
+                  </p>
+                </div>
+                <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
+                  <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Mejor Posición</p>
+                  <p className="text-5xl font-black text-white mt-2">
+                    {bestPosition ? `P${bestPosition}` : 'N/A'}
+                  </p>
+                </div>
               </div>
-              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
-                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Pos. Piloto</p>
-                <p className="text-5xl font-black text-white mt-2">19<span className="text-lg text-slate-400">vo</span></p>
-              </div>
-              <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
-                <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Mejor Posición</p>
-                <p className="text-5xl font-black text-white mt-2">P8</p>
-              </div>
-            </div>
+            )}
 
             {loading ? (
               <div className="flex justify-center items-center py-20">
