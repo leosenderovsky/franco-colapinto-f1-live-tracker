@@ -80,7 +80,7 @@ const CareerChart: React.FC<CareerChartProps> = ({ data }) => {
     xValue: (zone.start + zone.end) / 2,
     yValue: 1,
     yAdjust: 30,
-    content: zone.year === 2024 ? ['Escudería Williams', `Temporada ${zone.year}`] : ['Escudería Alpine', `Temporada ${zone.year}`],
+    content: zone.year === 2024 ? ['Williams', `${zone.year}`] : [`${zone.year === 2026 ? 'Alpine' : 'Alpine'}`, `${zone.year}`],
     color: 'rgba(255, 255, 255, 0.7)',
     font: {
       size: window.innerWidth < 768 ? 10 : 14,
