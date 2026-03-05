@@ -163,16 +163,34 @@ export default function App() {
 
     const fetchCalendar2026 = async () => {
       try {
-        const response = await fetch('https://jolpi.ca/ergast/f1/2026.json');
+        // Intentar con el endpoint primario
+        let response = await fetch('https://api.jolpi.ca/ergast/f1/2026.json');
+        
+        // Si falla, intentar con el endpoint alternativo
+        if (!response.ok) {
+          response = await fetch('https://jolpi.ca/ergast/f1/2026.json');
+        }
+        
         if (response.ok) {
           const data = await response.json();
           const races = data.MRData?.RaceTable?.Races || [];
-          setCalendar2026(races);
+          
+          // Validar que las carreras tengan los datos necesarios
+          const validRaces = races.filter(race => 
+            race.date && race.raceName && race.Circuit && race.Circuit.Location
+          );
+          
+          setCalendar2026(validRaces);
+          
+          if (validRaces.length === 0) {
+            console.warn('No valid races found in 2026 calendar');
+          }
         } else {
+          console.warn('Failed to fetch 2026 calendar:', response.status);
           setCalendar2026([]);
         }
       } catch (err) {
-        console.error('Error fetching calendar 2026:', err);
+        console.error('Error fetching 2026 calendar from API:', err);
         setCalendar2026([]);
       }
     };
@@ -202,12 +220,38 @@ export default function App() {
   };
 
   // Calculate next race for 2026
-  const now = new Date();
-  const nextRace = calendar2026.find(race => new Date(race.date) > now);
+  const getNextRace = () => {
+    if (!calendar2026 || calendar2026.length === 0) {
+      return null;
+    }
+    
+    const now = new Date();
+    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const futureRaces = calendar2026.filter(race => {
+      try {
+        const raceDate = new Date(race.date);
+        const raceDateOnly = new Date(raceDate.getFullYear(), raceDate.getMonth(), raceDate.getDate());
+        return raceDateOnly >= currentDate;
+      } catch (err) {
+        console.error('Error parsing race date:', race.date, err);
+        return false;
+      }
+    });
+    
+    return futureRaces.length > 0 ? futureRaces[0] : null;
+  };
+
+  const nextRace = activeView === 2026 ? getNextRace() : null;
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (err) {
+      console.error('Error formatting date:', dateStr, err);
+      return dateStr;
+    }
   };
 
   return (
@@ -316,26 +360,46 @@ export default function App() {
                 </h2>
 
                 {activeView === 2026 ? (
-                  <div className="flex items-stretch gap-8 border-t border-white/10 pt-6">
-                    <div className="pl-4 border-l-2" style={{ borderColor: config.primaryColor }}>
-                      <p className="text-xs uppercase tracking-widest text-white/60">Sesión Actual</p>
-                      <p className="text-2xl font-semibold">Práctica Libre 1</p>
-                    </div>
-                    <div className="pl-4 border-l-2 border-white/20">
-                      <p className="text-xs uppercase tracking-widest text-white/60">Objetivo</p>
-                      <p className="text-2xl font-semibold">Top 10 Final</p>
-                    </div>
-                    {nextRace && (
-                      <div className="pl-4 border-l-2 border-white/20">
-                        <p className="text-xs uppercase tracking-widest text-white/60 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" /> Próxima carrera
-                        </p>
-                        <p className="text-2xl font-semibold">{nextRace.raceName}</p>
-                        <p className="text-sm text-white/80">
-                          {formatDate(nextRace.date)} - {nextRace.Circuit.circuitName}, {nextRace.Circuit.Location.locality}, {nextRace.Circuit.Location.country}
-                        </p>
+                  <div className="flex flex-col gap-6 border-t border-white/10 pt-6">
+                    <div className="flex items-stretch gap-6 flex-wrap">
+                      <div className="pl-4 border-l-2" style={{ borderColor: config.primaryColor }}>
+                        <p className="text-xs uppercase tracking-widest text-white/60 font-semibold">Sesión Actual</p>
+                        <p className="text-2xl font-semibold text-white mt-1">Práctica Libre 1</p>
                       </div>
-                    )}
+                      <div className="pl-4 border-l-2 border-white/20">
+                        <p className="text-xs uppercase tracking-widest text-white/60 font-semibold">Objetivo</p>
+                        <p className="text-2xl font-semibold text-white mt-1">Top 10 Final</p>
+                      </div>
+                    </div>
+                    
+                    {nextRace ? (
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/8 transition-all duration-300">
+                        <div className="flex items-start gap-3 mb-3">
+                          <Calendar className="w-4 h-4 text-white/70 flex-shrink-0 mt-1" />
+                          <div className="flex-1">
+                            <p className="text-xs uppercase tracking-widest text-white/60 font-semibold">Próxima Carrera</p>
+                          </div>
+                        </div>
+                        <div className="ml-7">
+                          <p className="text-xl font-bold text-white mb-2">{nextRace.raceName}</p>
+                          <div className="space-y-1">
+                            <p className="text-sm text-white/80 font-medium">
+                              {formatDate(nextRace.date)}
+                            </p>
+                            <p className="text-sm text-white/70">
+                              {nextRace.Circuit?.circuitName && (
+                                <>
+                                  {nextRace.Circuit.circuitName}
+                                  {nextRace.Circuit.Location && (
+                                    <> • {nextRace.Circuit.Location.locality}, {nextRace.Circuit.Location.country}</>
+                                  )}
+                                </>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 ) : (
                   <div className="mt-6 max-w-lg border-t border-white/10 pt-6">
