@@ -477,8 +477,9 @@ export default function App() {
           </main>
         )}
         <footer className="container mx-auto px-4 py-6 md:px-8 border-t border-white/5 mt-auto">
-          <div className="flex justify-center items-center text-sm">
-            <p className="text-slate-400">Franco Colapinto F1 Live Tracker © 2026 Leo Aquiba Senderovsky</p>
+          <div className="flex flex-col items-center gap-2 text-sm">
+            <p className="text-slate-400">Franco Colapinto F1 Live Tracker</p>
+            <p className="text-slate-400">© 2026 Leo Aquiba Senderovsky</p>
           </div>
         </footer>
 
