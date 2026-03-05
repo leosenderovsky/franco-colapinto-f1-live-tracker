@@ -267,7 +267,7 @@ export default function App() {
         {/* Header & Segmented Control */}
         <header className="px-6 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 bg-[#1A1D24]">
           <div className="flex items-center gap-3">
-            <img src={f1Logo} alt="F1 Logo" className="h-10 object-contain shadow-lg shadow-red-500/20" />
+            <img src={f1Logo} alt="F1 Logo" className="h-10 object-contain" />
             <div className="flex flex-col">
               <h1 className="text-xl font-black tracking-tight text-white flex items-baseline gap-1">
                 COLAPINTO<span className="text-[#007AFF]">.43</span>
