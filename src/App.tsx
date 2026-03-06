@@ -542,7 +542,18 @@ export default function App() {
         <footer className="container mx-auto px-4 py-6 md:px-8 border-t border-white/5 mt-auto">
           <div className="flex flex-col items-center gap-2 text-sm">
             <p className="text-slate-400">Franco Colapinto F1 Live Tracker</p>
-            <p className="text-slate-400">© 2026 Leo Aquiba Senderovsky</p>
+            <p className="text-slate-400">
+              © 2026{' '}
+              <a
+                href="https://www.instagram.com/sender.ia/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline hover:text-slate-200 transition-colors"
+              >
+                sender.ia
+              </a>{' '}
+              - Leo Aquiba Senderovsky
+            </p>
           </div>
         </footer>
 
