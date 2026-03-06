@@ -1,0 +1,3 @@
+User-agent: * 
+Allow: / 
+Sitemap: https://franco-colapinto-f1-live-tracker.netlify.app/sitemap.xml
