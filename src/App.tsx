@@ -332,7 +332,7 @@ export default function App() {
           </AnimatePresence>
 
           {/* Hero Content */}
-          <div className="relative z-10 container mx-auto px-6 md:px-8 py-24 md:py-32 grid">
+          <div className="relative z-10 w-full container mx-auto px-6 md:px-10 lg:px-16 py-24 md:py-32 grid">
             <AnimatePresence>
               <motion.div
                 key={`hero-content-${selectedYear}`}
@@ -340,7 +340,7 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="max-w-3xl [grid-area:1/1]"
+                className="max-w-3xl w-full min-w-0 overflow-hidden [grid-area:1/1]"
               >
                 {activeView === 2026 && (
                   <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-widest text-slate-300">
@@ -352,7 +352,7 @@ export default function App() {
                   </div>
                 )}
                 
-                <h2 className="font-black text-7xl md:text-9xl uppercase italic -skew-x-12 my-4 text-white" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
+                <h2 className="font-black text-6xl sm:text-7xl md:text-8xl lg:text-9xl uppercase italic -skew-x-12 my-4 ml-4 text-white" style={{ textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>
                   Franco
                   <br />
                   Colapinto
