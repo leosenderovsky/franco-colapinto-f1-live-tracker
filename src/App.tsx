@@ -20,18 +20,14 @@ import f1Logo from '../assets/img/F1.png';
 import williamsLogo from '../assets/img/williams-f1-team.png';
 import alpineLogo from '../assets/img/bwt-alpine-f1-team.png';
 
-// 2. LÓGICA DE IDENTIDAD VISUAL (THEMING)
 const SEASON_CONFIG = {
   2024: {
     year: 2024,
     team: 'Williams Racing',
     primaryColor: '#005AFF',
     accentColor: '#FFFFFF',
-    // Portrait Franco: 800x1200px (PNG transparente, desde la cintura hacia arriba)
     driverImage: franco2024, 
-    // Monoplaza: 1200x600px (PNG transparente, vista lateral o 3/4)
     carImage: auto2024, 
-    // Backgrounds: 1920x1080px (Texturas de asfalto o circuitos difuminados)
     bgImage: bg2024, 
   },
   2025: {
@@ -64,35 +60,41 @@ type RaceResult = {
   };
   Results: Array<{
     position: string;
+    points: string;
     grid: string;
     FastestLap?: { rank: string; Time: { time: string } };
     status: string;
   }>;
 };
 
+interface CareerDataPoint {
+  raceName: string;
+  cumulativePoints: number | null;
+  position: string | null;
+  year: number;
+  isUpcoming?: boolean;
+}
+
 export default function App() {
-    const [activeView, setActiveView] = useState<'Home' | 2024 | 2025 | 2026>('Home');
+  const [activeView, setActiveView] = useState<'Home' | 2024 | 2025 | 2026>('Home');
   const [selectedYear, setSelectedYear] = useState<2024 | 2025 | 2026>(2025);
-  const [careerData, setCareerData] = useState<any[]>([]);
+  const [careerData, setCareerData] = useState<CareerDataPoint[]>([]);
   const [results, setResults] = useState<RaceResult[]>([]);
   const [standings, setStandings] = useState<any>(null);
   const [calendar2026, setCalendar2026] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-    const config = SEASON_CONFIG[selectedYear];
+  const config = SEASON_CONFIG[selectedYear];
 
-  // 1. ESTRUCTURA DE DATOS Y API
   useEffect(() => {
     if (activeView !== 'Home') {
       setSelectedYear(activeView);
     } else {
-      // Default hero for home view
       setSelectedYear(2025);
     }
   }, [activeView]);
 
-  // Data Fetching Logic
   useEffect(() => {
     const fetchSeasonData = async (year: 2024 | 2025 | 2026) => {
       setLoading(true);
@@ -106,7 +108,6 @@ export default function App() {
         const races = data.MRData?.RaceTable?.Races || [];
         setResults(races);
 
-        // Fetch standings
         try {
           const standingsResponse = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/drivers/colapinto/driverStandings.json`);
           if (standingsResponse.ok) {
@@ -133,61 +134,101 @@ export default function App() {
     const fetchFullCareerData = async () => {
       setLoading(true);
       setError(null);
-      setCareerData([]);
-      let allRaces: any[] = [];
+      let allRaces: CareerDataPoint[] = [];
       let cumulativePoints = 0;
+      const driverId = "colapinto";
 
-      for (const year of [2024, 2025, 2026]) {
+      const historicalYears = [2024, 2025];
+      for (const year of historicalYears) {
         try {
-          const response = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/drivers/colapinto/results.json`);
+          const response = await fetch(`https://api.jolpi.ca/ergast/f1/${year}/drivers/${driverId}/results.json`);
           if (!response.ok) continue;
           const data = await response.json();
-          const races = data.MRData?.RaceTable?.Races || [];
+          const races: RaceResult[] = data.MRData?.RaceTable?.Races || [];
+
           for (const race of races) {
             const result = race.Results[0];
             const points = parseInt(result.points, 10) || 0;
             cumulativePoints += points;
             allRaces.push({
               raceName: race.raceName,
-              year,
+              year: year as 2024 | 2025,
               cumulativePoints,
-              position: result.position,
+              position: `P${result.position}`,
+              isUpcoming: false,
             });
           }
         } catch (err) {
-          console.error(`Error fetching data for ${year}:`, err);
+          console.error(`Error fetching results for ${year}:`, err);
         }
       }
+
+      try {
+        const resultsResponse = await fetch(`https://api.jolpi.ca/ergast/f1/2026/drivers/${driverId}/results.json`);
+        const calendarResponse = await fetch('https://api.jolpi.ca/ergast/f1/2026.json');
+        
+        if (!calendarResponse.ok) throw new Error('Failed to fetch 2026 calendar');
+
+        const resultsData = resultsResponse.ok ? await resultsResponse.json() : null;
+        const calendarData = await calendarResponse.json();
+
+        const completedRaces: RaceResult[] = resultsData?.MRData?.RaceTable?.Races || [];
+        const scheduledRaces: RaceResult[] = calendarData?.MRData?.RaceTable?.Races || [];
+        
+        const completedRaceMap = new Map(completedRaces.map((r) => [r.round, r]));
+        
+        let lastCumulativePoints = cumulativePoints;
+
+        const races2026 = scheduledRaces.map((race) => {
+          const round = race.round;
+          if (completedRaceMap.has(round)) {
+            const completedRace = completedRaceMap.get(round)!;
+            const result = completedRace.Results[0];
+            const points = parseInt(result.points, 10) || 0;
+            lastCumulativePoints += points;
+            return {
+              raceName: race.raceName,
+              year: 2026,
+              cumulativePoints: lastCumulativePoints,
+              position: `P${result.position}`,
+              isUpcoming: false,
+              round: parseInt(round, 10),
+            };
+          } else {
+            return {
+              raceName: race.raceName,
+              year: 2026,
+              cumulativePoints: lastCumulativePoints,
+              position: null,
+              isUpcoming: true,
+              round: parseInt(round, 10),
+            };
+          }
+        });
+
+        races2026.sort((a, b) => a.round - b.round);
+        allRaces.push(...races2026);
+
+      } catch (err) {
+        console.error('Error processing 2026 data:', err);
+      }
+
       setCareerData(allRaces);
       setLoading(false);
     };
 
     const fetchCalendar2026 = async () => {
       try {
-        // Intentar con el endpoint primario
         let response = await fetch('https://api.jolpi.ca/ergast/f1/2026.json');
-        
-        // Si falla, intentar con el endpoint alternativo
         if (!response.ok) {
           response = await fetch('https://jolpi.ca/ergast/f1/2026.json');
         }
-        
         if (response.ok) {
           const data = await response.json();
           const races = data.MRData?.RaceTable?.Races || [];
-          
-          // Validar que las carreras tengan los datos necesarios
-          const validRaces = races.filter(race => 
-            race.date && race.raceName && race.Circuit && race.Circuit.Location
-          );
-          
+          const validRaces = races.filter(race => race.date && race.raceName && race.Circuit && race.Circuit.Location);
           setCalendar2026(validRaces);
-          
-          if (validRaces.length === 0) {
-            console.warn('No valid races found in 2026 calendar');
-          }
         } else {
-          console.warn('Failed to fetch 2026 calendar:', response.status);
           setCalendar2026([]);
         }
       } catch (err) {
@@ -206,7 +247,6 @@ export default function App() {
     }
   }, [activeView]);
 
-  // Calculate stats
   const totalPoints = results.reduce((sum, race) => sum + (parseInt(race.Results[0]?.points || '0', 10)), 0);
   const driverPosition = standings ? parseInt(standings.position, 10) : null;
   const bestPosition = results.length > 0 ? Math.min(...results.map(r => parseInt(r.Results[0].position, 10))) : null;
@@ -220,26 +260,10 @@ export default function App() {
     return 'vo';
   };
 
-  // Calculate next race for 2026
   const getNextRace = () => {
-    if (!calendar2026 || calendar2026.length === 0) {
-      return null;
-    }
-    
+    if (!calendar2026 || calendar2026.length === 0) return null;
     const now = new Date();
-    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    const futureRaces = calendar2026.filter(race => {
-      try {
-        const raceDate = new Date(race.date);
-        const raceDateOnly = new Date(raceDate.getFullYear(), raceDate.getMonth(), raceDate.getDate());
-        return raceDateOnly >= currentDate;
-      } catch (err) {
-        console.error('Error parsing race date:', race.date, err);
-        return false;
-      }
-    });
-    
+    const futureRaces = calendar2026.filter(race => new Date(race.date) >= now);
     return futureRaces.length > 0 ? futureRaces[0] : null;
   };
 
@@ -250,7 +274,6 @@ export default function App() {
       const date = new Date(dateStr);
       return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch (err) {
-      console.error('Error formatting date:', dateStr, err);
       return dateStr;
     }
   };
@@ -260,11 +283,7 @@ export default function App() {
       className="min-h-screen bg-[#151921] text-slate-200 font-sans overflow-x-hidden transition-colors duration-700 ease-in-out relative"
       style={{ '--primary': config.primaryColor, '--accent': config.accentColor } as React.CSSProperties}
     >
-
-      {/* The overlay is now part of the background layer's styling */}
-
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Header & Segmented Control */}
         <header className="px-6 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/5 bg-[#1A1D24]">
           <div className="flex items-center gap-3">
             <img src={f1Logo} alt="F1 Logo" className="h-10 object-contain" />
@@ -314,9 +333,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* Hero Section */}
         <section className="relative flex-1 flex items-center justify-start overflow-hidden text-white">
-          {/* Background Image with Animation */}
           <AnimatePresence>
             <motion.div
               key={`hero-bg-${selectedYear}`}
@@ -331,7 +348,6 @@ export default function App() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Hero Content */}
           <div className="relative z-10 w-full container mx-auto px-6 md:px-10 lg:px-16 py-24 md:py-32 grid">
             <AnimatePresence>
               <motion.div
@@ -428,34 +444,30 @@ export default function App() {
                     )}
                   </div>
                 )}
-
-
               </motion.div>
             </AnimatePresence>
           </div>
         </section>
 
-        {/* Results Section - Glassmorphism */}
         {activeView === 'Home' ? (
           <main id="home-chart-container" className="container mx-auto px-4 py-12 md:py-16 relative z-20">
             <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl backdrop-blur-xl shadow-2xl shadow-black/20">
               <div className="p-6 border-b border-white/5">
                 <h2 className="text-lg font-bold uppercase tracking-wider text-slate-300">Historial de posiciones</h2>
               </div>
-              <div className="p-2 md:p-6" style={{ position: 'relative', height: '60vh' }}>
+              <div className="p-2 md:p-6 relative overflow-hidden min-h-[400px] h-[350px] md:h-[420px]">
                 {loading ? (
                   <div className="flex justify-center items-center h-full">
                     <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" style={{ borderTopColor: config.primaryColor }} />
                   </div>
                 ) : (
-                  <CareerChart data={careerData.map(race => ({ raceName: race.raceName, cumulativePoints: race.cumulativePoints, position: race.position, year: race.year }))} />
+                  <CareerChart data={careerData} />
                 )}
               </div>
             </div>
           </main>
         ) : (
           <main className="container mx-auto px-4 py-12 md:py-24 relative z-20">
-            {/* Stat Cards */}
             {(activeView !== 2026 || results.length > 0) && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <div className="bg-[#1A1D24]/80 border border-white/5 rounded-3xl p-6 backdrop-blur-xl">
